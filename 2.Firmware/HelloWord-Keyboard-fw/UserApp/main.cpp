@@ -1,6 +1,7 @@
 #include "common_inc.h"
 #include "configurations.h"
 #include "HelloWord/hw_keyboard.h"
+#include "../HelloWord/hw_keyboard.h"
 
 
 /* Component Definitions -----------------------------------------------------*/
@@ -43,6 +44,8 @@ void Main()
             keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) t, 50, 0});
         /*-----------------------------------*/
 
+
+
         // Send RGB buffers to LEDs
         keyboard.SyncLights();
     }
@@ -55,13 +58,25 @@ extern "C" void OnTimerCallback() // 1000Hz callback
     keyboard.ApplyDebounceFilter(100);
     keyboard.Remap(keyboard.FnPressed() ? 2 : 1);  // When Fn pressed use layer-2
 
-    if (keyboard.KeyPressed(HWKeyboard::LEFT_CTRL) &&
+    /*if (keyboard.KeyPressed(HWKeyboard::LEFT_CTRL) &&
         keyboard.KeyPressed(HWKeyboard::A))
     {
         // do something...
 
         // or trigger some keys...
         keyboard.Press(HWKeyboard::DELETE);
+    }*/
+
+    /*----  ----*/
+    keyboard.SetRgbBufferByID(keyboard.GetTouchBarState(), HWKeyboard::Color_t{250, 0, 0});
+
+    if (keyboard.KeyPressed(HWKeyboard::VOLUME_UP))
+    {
+        keyboard.Press(HWKeyboard::VOLUME_UP);
+    }
+    if (keyboard.KeyPressed(HWKeyboard::VOLUME_DOWN))
+    {
+        keyboard.Press(HWKeyboard::VOLUME_DOWN);
     }
 
     // Report HID key states

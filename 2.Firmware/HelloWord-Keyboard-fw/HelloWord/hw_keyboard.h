@@ -85,11 +85,27 @@ public:
     int16_t keyMap[5][IO_NUMBER] = {
         {67,61,60,58,59,52,55,51,50,49,48,47,46,3,
             80,81,64,57,62,63,53,54,45,44,40,31,26,18,2,
-            19,70,71,66,65,56,36,37,38,39,43,42,41,28,1,
-            15,74,73,72,68,69,29,30,35,34,33,32,24,0,
+            19,70,71,66,65,56,36,37,38,39,43,42,41,28,0,
+            15,74,73,72,68,69,29,30,35,34,33,32,24,1,
             14,76,77,78,79,16,20,21,22,23,27,25,17,4,
             13,12,8,75,9,10,7,11,6,5,
             86,84,82,87,85,83}, // TouchBar index
+
+		 /*
+		 * ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+		 * │Esc│F1 │F2 │F3 │F4 │F5 │F6 │F7 │F8 │F9 │F10│F11│F12│   │   │PA │
+		 * ├───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┴───┼───┤
+		 * │ ` │ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 │ 9 │ 0 │ - │ = │ Backsp│Ins│
+		 * ├───┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─────┼───┤
+		 * │ Tab │ Q │ W │ E │ R │ T │ Y │ U │ I │ O │ P │ [ │ ] │     │Del│
+		 * ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┐ Ent├───┤
+		 * │ Caps │ A │ S │ D │ F │ G │ H │ J │ K │ L │ ; │ ' │ # │    │Hom│
+		 * ├────┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴───┴┬───┼───┤
+		 * │Shft│ \ │ Z │ X │ C │ V │ B │ N │ M │ , │ . │ / │ Shift│ ↑ │End│
+		 * ├────┼───┴┬──┴─┬─┴───┴───┴───┴───┴───┴──┬┴──┬┴──┬┴──┬───┼───┼───┤
+		 * │Ctrl│GUI │Alt │                        │Alt│GUI│Ctl│ ← │ ↓ │ → │
+		 * └────┴────┴────┴────────────────────────┴───┴───┴───┴───┴───┴───┘
+		 */
 
         {ESC,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,PAUSE,
             GRAVE_ACCENT,NUM_1,NUM_2,NUM_3,NUM_4,NUM_5,NUM_6,NUM_7,NUM_8,NUM_9,NUM_0,MINUS,EQUAL,BACKSPACE,INSERT,
@@ -98,12 +114,31 @@ public:
             LEFT_SHIFT,Z,X,C,V,B,N,M,COMMA,PERIOD,SLASH,RIGHT_SHIFT,UP_ARROW,PAGE_DOWN,
             LEFT_CTRL,LEFT_GUI,LEFT_ALT,SPACE,RIGHT_ALT,FN,RIGHT_CTRL,LEFT_ARROW,DOWN_ARROW,RIGHT_ARROW },
 
+		 /*
+		 * ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+		 * │Esc│F1 │F2 │F3 │F4 │F5 │F6 │F7 │F8 │F9 │F10│F11│F12│   │   │PA │
+		 * ├───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┴───┼───┤
+		 * │ ` │ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 │ 9 │ 0 │ - │ = │ Backsp│Ins│
+		 * ├───┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─────┼───┤
+		 * │ Tab │ A │ B │ C │ D │ E │ F │ G │ H │ I │ J │ [ │ ] │     │Del│
+		 * ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┐ Ent├───┤
+		 * │ Caps │ H │ I │ J │ K │ G │ H │ J │ K │ L │ ; │ ' │ # │    │Hom│
+		 * ├────┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴───┴┬───┼───┤
+		 * │Shft│ \ │ Z │ X │ C │ V │ B │ N │ M │ , │ . │ / │ Shift│ ↑ │End│
+		 * ├────┼───┴┬──┴─┬─┴───┴───┴───┴───┴───┴──┬┴──┬┴──┬┴──┬───┼───┼───┤
+		 * │Ctrl│GUI │Alt │                        │Alt│GUI│Ctl│ ← │ ↓ │ → │
+		 * ├────┴────┴────┴┬───┬───┬───┬───┬───┬───┼───┴───┴───┴───┴───┴───┤
+		 * │               │ - │ - │ - │ + │ + │ + │                       │
+		 * ├───────────────┴───┴───┴───┴───┴───┴───┴───────────────────────┘
+		 */
+
         {ESC,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,PAUSE,
             GRAVE_ACCENT,NUM_1,NUM_2,NUM_3,NUM_4,NUM_5,NUM_6,NUM_7,NUM_8,NUM_9,NUM_0,MINUS,EQUAL,BACKSPACE,INSERT,
             TAB,A,B,C,D,E,F,G,H,I,J,LEFT_U_BRACE,RIGHT_U_BRACE,BACKSLASH,DELETE,
             CAP_LOCK,K,L,M,N,O,P,Q,R,S,SEMI_COLON,QUOTE,ENTER,PAGE_UP,
             LEFT_SHIFT,T,U,V,W,X,Y,Z,COMMA,PERIOD,SLASH,RIGHT_SHIFT,A,PAGE_DOWN,
-            LEFT_CTRL,LEFT_GUI,LEFT_ALT,SPACE,RIGHT_ALT,FN,RIGHT_CTRL,LEFT_ARROW,DOWN_ARROW,RIGHT_ARROW }
+            LEFT_CTRL,LEFT_GUI,LEFT_ALT,SPACE,RIGHT_ALT,FN,RIGHT_CTRL,LEFT_ARROW,DOWN_ARROW,RIGHT_ARROW,
+            VOLUME_DOWN,VOLUME_DOWN,VOLUME_DOWN,VOLUME_UP,VOLUME_UP,VOLUME_UP}
     };
 
     volatile bool isRgbTxBusy;

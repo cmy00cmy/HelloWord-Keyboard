@@ -53,7 +53,7 @@ public:
         PAD_PERIOD , NONUS_BACKSLASH,APPLICATION,POWER,PAD_EQUAL,
         F13,F14,F15,F16,F17,F18,F19,F20,F21,F22,F23,F24, EXECUTE,
         HELP,MENU,SELECT,STOP,AGAIN,UNDO,CUT,COPY,PASTE,FIND,MUTE,VOLUME_UP,VOLUME_DOWN,
-        FN = 1000
+        FN
         /*------------------------- HID report data -------------------------*/
     };
 
@@ -112,7 +112,8 @@ public:
             TAB,Q,W,E,R,T,Y,U,I,O,P,LEFT_U_BRACE,RIGHT_U_BRACE,BACKSLASH,DELETE,
             CAP_LOCK,A,S,D,F,G,H,J,K,L,SEMI_COLON,QUOTE,ENTER,PAGE_UP,
             LEFT_SHIFT,Z,X,C,V,B,N,M,COMMA,PERIOD,SLASH,RIGHT_SHIFT,UP_ARROW,PAGE_DOWN,
-            LEFT_CTRL,LEFT_GUI,LEFT_ALT,SPACE,RIGHT_ALT,FN,RIGHT_CTRL,LEFT_ARROW,DOWN_ARROW,RIGHT_ARROW },
+            LEFT_CTRL,LEFT_GUI,LEFT_ALT,SPACE,RIGHT_ALT,FN,RIGHT_CTRL,LEFT_ARROW,DOWN_ARROW,RIGHT_ARROW,
+            A,B,C,D,E,F},
 
 		 /*
 		 * ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
@@ -143,7 +144,8 @@ public:
 
     volatile bool isRgbTxBusy;
     bool isCapsLocked = false;
-
+    uint8_t mode = 0; //0-Off, 1-Breath, 2-Lock
+    uint8_t colorR = 0, colorG = 0, colorB = 0;
 
 private:
     SPI_HandleTypeDef* spiHandle;

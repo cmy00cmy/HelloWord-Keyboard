@@ -97,7 +97,8 @@ uint8_t* HWKeyboard::Remap(uint8_t _layer)
 
 bool HWKeyboard::FnPressed()
 {
-    return remapBuffer[9] & 0x02;
+    //return remapBuffer[9] & 0x02;
+    return KeyPressed(HWKeyboard::FN);
 }
 
 

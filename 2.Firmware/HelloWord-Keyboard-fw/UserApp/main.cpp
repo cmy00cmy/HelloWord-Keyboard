@@ -32,17 +32,31 @@ void Main()
 
     while (true)
     {
-        /*---- This is a demo RGB effect ----*/
-        static uint32_t t = 1;
-        static bool fadeDir = true;
+        switch (keyboard.mode){
+            case 0:
+                break;
+            case 1:
+                /*---- This is a demo RGB effect ----*/
+                static uint32_t t = 1;
+                static bool fadeDir = true;
 
-        fadeDir ? t++ : t--;
-        if (t > 250) fadeDir = false;
-        else if (t < 1) fadeDir = true;
+                fadeDir ? t++ : t--;
+                if (t > 250) fadeDir = false;
+                else if (t < 1) fadeDir = true;
 
-        for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++)
-            keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) t, 50, 0});
-        /*-----------------------------------*/
+                for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++)
+                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) t, 50, 0});
+                /*-----------------------------------*/
+                break;
+            case 2:
+                for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++)
+                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{100, 100, 100});
+                break;
+            default:
+                break;
+        }
+
+
 
 
 
@@ -56,8 +70,41 @@ extern "C" void OnTimerCallback() // 1000Hz callback
 {
     keyboard.ScanKeyStates();  // Around 40us use 4MHz SPI clk
     keyboard.ApplyDebounceFilter(100);
-    keyboard.Remap(keyboard.FnPressed() ? 2 : 1);  // When Fn pressed use layer-2
+    //keyboard.Remap(keyboard.FnPressed() ? 2 : 1);  // When Fn pressed use layer-2
+    keyboard.Remap(1);  // When Fn pressed use layer-2
+    if (keyboard.KeyPressed(HWKeyboard::FN))
+    {
+        if(keyboard.KeyPressed(HWKeyboard::BACKSPACE)){
+            if(keyboard.mode > 1){
+                keyboard.mode = 0;
+                for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++){
+                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) 0, 0, 0});
+                }
+                keyboard.SyncLights();
 
+            }
+            else{
+                keyboard.mode++;
+            }
+        }
+        uint8_t rbg = keyboard.colorB + keyboard.colorG + keyboard.colorR;
+        if(keyboard.KeyPressed(HWKeyboard::UP_ARROW)){
+            static bool fadeDir = true;
+
+            fadeDir ? rbg++ : rbg--;
+            if (rbg > 750) fadeDir = false;
+            else if (rbg < 1) fadeDir = true;
+
+            keyboard.colorB = rbg % 250;
+            keyboard.colorG = (rbg - keyboard.colorB <= 0 ? 0: rbg - keyboard.colorB) % 250;
+            keyboard.colorR = rbg - keyboard.colorG < 0 ? 0 : rbg - keyboard.colorB - keyboard.colorG < 0;
+            for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++){
+                keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) keyboard.colorR, keyboard.colorG, keyboard.colorB});
+            }
+            keyboard.SyncLights();
+
+        }
+    }
     /*if (keyboard.KeyPressed(HWKeyboard::LEFT_CTRL) &&
         keyboard.KeyPressed(HWKeyboard::A))
     {
@@ -70,14 +117,14 @@ extern "C" void OnTimerCallback() // 1000Hz callback
     /*----  ----*/
     keyboard.SetRgbBufferByID(keyboard.GetTouchBarState(), HWKeyboard::Color_t{250, 0, 0});
 
-    if (keyboard.KeyPressed(HWKeyboard::VOLUME_UP))
+/*    if (keyboard.KeyPressed(HWKeyboard::VOLUME_UP))
     {
         keyboard.Press(HWKeyboard::VOLUME_UP);
     }
     if (keyboard.KeyPressed(HWKeyboard::VOLUME_DOWN))
     {
         keyboard.Press(HWKeyboard::VOLUME_DOWN);
-    }
+    }*/
 
     // Report HID key states
     USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,

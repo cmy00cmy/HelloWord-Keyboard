@@ -211,4 +211,3 @@ uint8_t HWKeyboard::GetTouchBarState(uint8_t _id)
     return _id == 0 ? tmp : (tmp & (1 << (_id - 1)));
 }
 
-

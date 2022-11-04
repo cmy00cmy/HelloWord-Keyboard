@@ -144,7 +144,7 @@ public:
 
     volatile bool isRgbTxBusy;
     bool isCapsLocked = false;
-    uint8_t mode = 0; //0-Off, 1-Breath, 2-Lock
+    uint8_t mode = 1; //0-Off, 1-Breath, 2-Lock
     uint8_t colorR = 0, colorG = 0, colorB = 0;
 
 private:

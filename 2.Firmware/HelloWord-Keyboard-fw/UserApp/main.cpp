@@ -34,6 +34,8 @@ void Main()
     {
         switch (keyboard.mode){
             case 0:
+                for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++)
+                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{0, 0, 0});
                 break;
             case 1:
                 /*---- This is a demo RGB effect ----*/
@@ -50,7 +52,7 @@ void Main()
                 break;
             case 2:
                 for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++)
-                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{100, 100, 100});
+                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{0, 0, 250});
                 break;
             default:
                 break;
@@ -65,43 +67,53 @@ void Main()
     }
 }
 
+HWKeyboard::KeyCode_t lastKeyCode = HWKeyboard::RESERVED;
 /* Event Callbacks -----------------------------------------------------------*/
 extern "C" void OnTimerCallback() // 1000Hz callback
 {
     keyboard.ScanKeyStates();  // Around 40us use 4MHz SPI clk
     keyboard.ApplyDebounceFilter(100);
     //keyboard.Remap(keyboard.FnPressed() ? 2 : 1);  // When Fn pressed use layer-2
-    keyboard.Remap(1);  // When Fn pressed use layer-2
+    keyboard.Remap(1);
     if (keyboard.KeyPressed(HWKeyboard::FN))
     {
-        if(keyboard.KeyPressed(HWKeyboard::BACKSPACE)){
+        keyboard.Release(HWKeyboard::FN);
+        //避免重复操作
+        if(!keyboard.KeyPressed(lastKeyCode))
+        {
+            lastKeyCode = HWKeyboard::RESERVED;
+        }
+        else
+        {
+            keyboard.Release(lastKeyCode);
+        }
+
+        if(lastKeyCode == HWKeyboard::RESERVED && keyboard.KeyPressed(HWKeyboard::BACKSPACE)){
+            lastKeyCode = HWKeyboard::BACKSPACE;
             if(keyboard.mode > 1){
                 keyboard.mode = 0;
-                for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++){
-                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) 0, 0, 0});
-                }
-                keyboard.SyncLights();
-
             }
             else{
                 keyboard.mode++;
             }
+            keyboard.Release(HWKeyboard::BACKSPACE);
+            lastKeyCode = HWKeyboard::BACKSPACE;
         }
         uint8_t rbg = keyboard.colorB + keyboard.colorG + keyboard.colorR;
-        if(keyboard.KeyPressed(HWKeyboard::UP_ARROW)){
-            static bool fadeDir = true;
-
-            fadeDir ? rbg++ : rbg--;
-            if (rbg > 750) fadeDir = false;
-            else if (rbg < 1) fadeDir = true;
-
-            keyboard.colorB = rbg % 250;
-            keyboard.colorG = (rbg - keyboard.colorB <= 0 ? 0: rbg - keyboard.colorB) % 250;
-            keyboard.colorR = rbg - keyboard.colorG < 0 ? 0 : rbg - keyboard.colorB - keyboard.colorG < 0;
-            for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++){
-                keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) keyboard.colorR, keyboard.colorG, keyboard.colorB});
-            }
-            keyboard.SyncLights();
+        if(keyboard.mode == 2 && keyboard.KeyPressed(HWKeyboard::UP_ARROW)){
+//            static bool fadeDir = true;
+//
+//            fadeDir ? rbg++ : rbg--;
+//            if (rbg > 750) fadeDir = false;
+//            else if (rbg < 1) fadeDir = true;
+//
+//            keyboard.colorB = rbg % 250;
+//            keyboard.colorG = (rbg - keyboard.colorB <= 0 ? 0: rbg - keyboard.colorB) % 250;
+//            keyboard.colorR = rbg - keyboard.colorG < 0 ? 0 : rbg - keyboard.colorB - keyboard.colorG < 0;
+//            for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++){
+//                keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) keyboard.colorR, keyboard.colorG, keyboard.colorB});
+//            }
+//            keyboard.SyncLights();
 
         }
     }
@@ -115,7 +127,7 @@ extern "C" void OnTimerCallback() // 1000Hz callback
     }*/
 
     /*----  ----*/
-    keyboard.SetRgbBufferByID(keyboard.GetTouchBarState(), HWKeyboard::Color_t{250, 0, 0});
+    //keyboard.SetRgbBufferByID(keyboard.GetTouchBarState(), HWKeyboard::Color_t{250, 0, 0});
 
 /*    if (keyboard.KeyPressed(HWKeyboard::VOLUME_UP))
     {

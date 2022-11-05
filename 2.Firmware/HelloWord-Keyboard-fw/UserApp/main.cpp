@@ -124,15 +124,16 @@ extern "C" void OnTimerCallback() // 1000Hz callback
 
     if(keyboard.GetTouchBarState() > 0)
     {
-        uint8_t touchId = (uint8_t) pow((double) keyboard.GetTouchBarState() - 1, (double) 1.0 / 2);
-        if(lastTouchId >= 0)
-        {
-            touchId > lastTouchId ? keyboard.KeyPressed(HWKeyboard::RIGHT_ARROW) : keyboard.KeyPressed(HWKeyboard::LEFT_ARROW);
-
-        }
-        lastTouchId = touchId;
-        //keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
-        keyboard.SetRgbBufferByID(lastTouchId, HWKeyboard::Color_t{250, 0, 0});
+//        uint8_t touchId = (uint8_t) pow((double) keyboard.GetTouchBarState(), (double) 1.0 / 2);
+//        if(lastTouchId >= 0)
+//        {
+//            touchId > lastTouchId ? keyboard.KeyPressed(HWKeyboard::RIGHT_ARROW) : keyboard.KeyPressed(HWKeyboard::LEFT_ARROW);
+//
+//        }
+//        lastTouchId = touchId;
+//        //keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
+//        if(keyboard.GetTouchBarState((uint8_t) 4) > 0)
+//            keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
 
     }
     /*if (keyboard.KeyPressed(HWKeyboard::LEFT_CTRL) &&

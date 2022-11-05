@@ -6,6 +6,7 @@ extern "C" {
 #endif
 /*---------------------------- C Scope ---------------------------*/
 #include <stdbool.h>
+#include <math.h>
 #include "stdint-gcc.h"
 
 

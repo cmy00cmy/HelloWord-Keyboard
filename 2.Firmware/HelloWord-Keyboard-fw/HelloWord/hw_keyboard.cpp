@@ -118,6 +118,11 @@ void HWKeyboard::SetRgbBufferByID(uint8_t _keyId, HWKeyboard::Color_t _color, fl
     }
 }
 
+void HWKeyboard::SetRgbBufferByKeyCode(HWKeyboard::KeyCode_t _key, HWKeyboard::Color_t _color, float _brightness)
+{
+    uint8_t id = 0;
+    SetRgbBufferByID(id, _color, _brightness);
+}
 
 void HWKeyboard::SyncLights()
 {

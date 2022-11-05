@@ -80,6 +80,7 @@ public:
     uint8_t* GetHidReportBuffer(uint8_t _reportId);
     uint8_t  GetTouchBarState(uint8_t _id = 0);
     void SetRgbBufferByID(uint8_t _keyId, Color_t _color, float _brightness = 1);
+    void SetRgbBufferByKeyCode(KeyCode_t _key, Color_t _color, float _brightness = 1);
 
 
     int16_t keyMap[5][IO_NUMBER] = {
@@ -112,8 +113,8 @@ public:
             TAB,Q,W,E,R,T,Y,U,I,O,P,LEFT_U_BRACE,RIGHT_U_BRACE,BACKSLASH,DELETE,
             CAP_LOCK,A,S,D,F,G,H,J,K,L,SEMI_COLON,QUOTE,ENTER,PAGE_UP,
             LEFT_SHIFT,Z,X,C,V,B,N,M,COMMA,PERIOD,SLASH,RIGHT_SHIFT,UP_ARROW,PAGE_DOWN,
-            LEFT_CTRL,LEFT_GUI,LEFT_ALT,SPACE,RIGHT_ALT,FN,RIGHT_CTRL,LEFT_ARROW,DOWN_ARROW,RIGHT_ARROW,
-            A,B,C,D,E,F},
+            LEFT_CTRL,LEFT_GUI,LEFT_ALT,SPACE,RIGHT_ALT,FN,RIGHT_CTRL,LEFT_ARROW,DOWN_ARROW,RIGHT_ARROW
+            },
 
 		 /*
 		 * ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
@@ -145,7 +146,7 @@ public:
     volatile bool isRgbTxBusy;
     bool isCapsLocked = false;
     uint8_t mode = 1; //0-Off, 1-Breath, 2-Lock
-    uint8_t colorR = 0, colorG = 0, colorB = 0;
+    uint8_t color[3] = {100, 0, 0};
 
 private:
     SPI_HandleTypeDef* spiHandle;

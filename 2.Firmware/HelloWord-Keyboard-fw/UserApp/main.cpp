@@ -52,7 +52,7 @@ void Main()
                 break;
             case 2:
                 for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++)
-                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{0, 0, 250});
+                    keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{keyboard.color[0], keyboard.color[1], keyboard.color[2]});
                 break;
             default:
                 break;
@@ -68,6 +68,7 @@ void Main()
 }
 
 HWKeyboard::KeyCode_t lastKeyCode = HWKeyboard::RESERVED;
+uint8_t lastTouchId = -1;
 /* Event Callbacks -----------------------------------------------------------*/
 extern "C" void OnTimerCallback() // 1000Hz callback
 {
@@ -88,6 +89,7 @@ extern "C" void OnTimerCallback() // 1000Hz callback
             keyboard.Release(lastKeyCode);
         }
 
+        //切换灯光模式
         if(lastKeyCode == HWKeyboard::RESERVED && keyboard.KeyPressed(HWKeyboard::BACKSPACE)){
             lastKeyCode = HWKeyboard::BACKSPACE;
             if(keyboard.mode > 1){
@@ -99,23 +101,39 @@ extern "C" void OnTimerCallback() // 1000Hz callback
             keyboard.Release(HWKeyboard::BACKSPACE);
             lastKeyCode = HWKeyboard::BACKSPACE;
         }
-        uint8_t rbg = keyboard.colorB + keyboard.colorG + keyboard.colorR;
+
+        //mode-2 修改颜色
+        int rgb = keyboard.color[0] + keyboard.color[1] + keyboard.color[2];
         if(keyboard.mode == 2 && keyboard.KeyPressed(HWKeyboard::UP_ARROW)){
-//            static bool fadeDir = true;
-//
-//            fadeDir ? rbg++ : rbg--;
-//            if (rbg > 750) fadeDir = false;
-//            else if (rbg < 1) fadeDir = true;
-//
-//            keyboard.colorB = rbg % 250;
-//            keyboard.colorG = (rbg - keyboard.colorB <= 0 ? 0: rbg - keyboard.colorB) % 250;
-//            keyboard.colorR = rbg - keyboard.colorG < 0 ? 0 : rbg - keyboard.colorB - keyboard.colorG < 0;
-//            for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++){
-//                keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) keyboard.colorR, keyboard.colorG, keyboard.colorB});
-//            }
-//            keyboard.SyncLights();
+            static bool fadeDir = true;
+
+            fadeDir ? rgb++ : rgb--;
+            if (rgb >= 750) fadeDir = false;
+            else if (rgb < 1) fadeDir = true;
+
+            int tmp = rgb;
+            memset(keyboard.color, 0, 3);
+            for (int i = 0; i <= rgb / 250; i++)
+            {
+                keyboard.color[i] = tmp / 250 >= 1 ? 250 : tmp % 250;
+                tmp -= keyboard.color[i];
+            }
+            keyboard.Release(HWKeyboard::UP_ARROW);
+        }
+    }
+
+    if(keyboard.GetTouchBarState() > 0)
+    {
+        uint8_t touchId = (uint8_t) pow((double) keyboard.GetTouchBarState() - 1, (double) 1.0 / 2);
+        if(lastTouchId >= 0)
+        {
+            touchId > lastTouchId ? keyboard.KeyPressed(HWKeyboard::RIGHT_ARROW) : keyboard.KeyPressed(HWKeyboard::LEFT_ARROW);
 
         }
+        lastTouchId = touchId;
+        //keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
+        keyboard.SetRgbBufferByID(lastTouchId, HWKeyboard::Color_t{250, 0, 0});
+
     }
     /*if (keyboard.KeyPressed(HWKeyboard::LEFT_CTRL) &&
         keyboard.KeyPressed(HWKeyboard::A))
@@ -127,7 +145,6 @@ extern "C" void OnTimerCallback() // 1000Hz callback
     }*/
 
     /*----  ----*/
-    //keyboard.SetRgbBufferByID(keyboard.GetTouchBarState(), HWKeyboard::Color_t{250, 0, 0});
 
 /*    if (keyboard.KeyPressed(HWKeyboard::VOLUME_UP))
     {

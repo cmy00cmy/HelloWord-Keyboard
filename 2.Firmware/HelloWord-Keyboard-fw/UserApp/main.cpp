@@ -79,7 +79,7 @@ void Main()
 }
 
 HWKeyboard::KeyCode_t lastKeyCode = HWKeyboard::RESERVED;
-uint8_t lastTouchId = -1;
+uint8_t lastTouchId = 0;
 /* Event Callbacks -----------------------------------------------------------*/
 extern "C" void OnTimerCallback() // 1000Hz callback
 {
@@ -137,20 +137,59 @@ extern "C" void OnTimerCallback() // 1000Hz callback
         }
     }
 
-    if(keyboard.GetTouchBarState() > 0)
-    {
-//        uint8_t touchId = (uint8_t) pow((double) keyboard.GetTouchBarState(), (double) 1.0 / 2);
-//        if(lastTouchId >= 0)
+    /*----- 触摸条方案1 对比前后touchid，灵敏度太低-----*/
+//    if(keyboard.GetTouchBarState() > 0)
+//    {
+//        uint8_t touchId = 0;
+//        for(int i=1; i < 7; i++)
 //        {
-//            touchId > lastTouchId ? keyboard.KeyPressed(HWKeyboard::RIGHT_ARROW) : keyboard.KeyPressed(HWKeyboard::LEFT_ARROW);
-//
+//            if(keyboard.GetTouchBarState((uint8_t) i) > 0)
+//            {
+//                touchId = i;
+//            }
 //        }
+//        keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
+//
+//        //排除第一次按下和按住没动的场景
+//        if(lastTouchId != 0 && touchId != lastTouchId)
+//        {
+//            if(touchId > lastTouchId)
+//            {
+//                keyboard.Press(HWKeyboard::RIGHT_ARROW);
+//            }
+//            else
+//            {
+//                keyboard.Press(HWKeyboard::LEFT_ARROW);
+//            }
+//        }
+//
 //        lastTouchId = touchId;
-//        //keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
-//        if(keyboard.GetTouchBarState((uint8_t) 4) > 0)
-//            keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
+//    }
+//    else
+//    {
+//        lastTouchId = 0;
+//    }
+//    keyboard.SetRgbBufferByID(lastTouchId, HWKeyboard::Color_t{250, 0, 0});
+    /*----  ----*/
 
+    /*----- 触摸条方案2 自定义触发按键，根据1-3 LEFT 4-6 RIGHT------*/
+    if(keyboard.KeyPressed(HWKeyboard::LEFT_CTRL))
+    {
+        uint8_t touchId = 0;
+        if(keyboard.GetTouchBarState() > 0)
+        {
+            for(int i=1; i < 7; i++)
+            {
+                if(keyboard.GetTouchBarState((uint8_t) i) > 0)
+                {
+                    touchId = i;
+                }
+            }
+            touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
+        }
+        keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
     }
+
     /*if (keyboard.KeyPressed(HWKeyboard::LEFT_CTRL) &&
         keyboard.KeyPressed(HWKeyboard::A))
     {
@@ -161,15 +200,6 @@ extern "C" void OnTimerCallback() // 1000Hz callback
     }*/
 
     /*----  ----*/
-
-/*    if (keyboard.KeyPressed(HWKeyboard::VOLUME_UP))
-    {
-        keyboard.Press(HWKeyboard::VOLUME_UP);
-    }
-    if (keyboard.KeyPressed(HWKeyboard::VOLUME_DOWN))
-    {
-        keyboard.Press(HWKeyboard::VOLUME_DOWN);
-    }*/
 
     // Report HID key states
     USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,

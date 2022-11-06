@@ -23,6 +23,8 @@ typedef struct KeyboardConfig_t
     configStatus_t configStatus;
     uint64_t serialNum;
     int8_t keyMap[128];
+    uint8_t color[3];
+    uint8_t mode;
 } KeyboardConfig_t;
 
 extern KeyboardConfig_t config;

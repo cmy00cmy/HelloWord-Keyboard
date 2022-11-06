@@ -7,7 +7,7 @@
 /* Component Definitions -----------------------------------------------------*/
 KeyboardConfig_t config;
 HWKeyboard keyboard(&hspi1);
-
+bool configChanged = false;
 
 /* Main Entry ----------------------------------------------------------------*/
 void Main()
@@ -20,11 +20,16 @@ void Main()
         config = KeyboardConfig_t{
             .configStatus = CONFIG_OK,
             .serialNum=123,
-            .keyMap={}
+            .keyMap={},
+            .color={},
+            .mode = 1
         };
         memset(config.keyMap, -1, 128);
+        memset(config.color, 0, 3);
         eeprom.Push(0, config);
     }
+    keyboard.mode = config.mode;
+    memcpy(keyboard.color, config.color, 3);
 
     // Keyboard Report Start
     HAL_TIM_Base_Start_IT(&htim4);
@@ -58,13 +63,19 @@ void Main()
                 break;
         }
 
-
-
-
-
         // Send RGB buffers to LEDs
         keyboard.SyncLights();
+
+        if(configChanged)
+        {
+            config.mode = keyboard.mode;
+            memcpy(config.color, keyboard.color, 3);
+            eeprom.Push(0, config);
+
+        }
     }
+
+
 }
 
 HWKeyboard::KeyCode_t lastKeyCode = HWKeyboard::RESERVED;
@@ -98,8 +109,10 @@ extern "C" void OnTimerCallback() // 1000Hz callback
             else{
                 keyboard.mode++;
             }
+
             keyboard.Release(HWKeyboard::BACKSPACE);
             lastKeyCode = HWKeyboard::BACKSPACE;
+            configChanged  = true;
         }
 
         //mode-2 修改颜色
@@ -119,6 +132,8 @@ extern "C" void OnTimerCallback() // 1000Hz callback
                 tmp -= keyboard.color[i];
             }
             keyboard.Release(HWKeyboard::UP_ARROW);
+
+            configChanged = true;
         }
     }
 

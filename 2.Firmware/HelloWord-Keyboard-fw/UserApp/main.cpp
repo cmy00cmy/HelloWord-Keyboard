@@ -135,10 +135,47 @@ extern "C" void OnTimerCallback() // 1000Hz callback
 
         }
 
+        //临时方案，FN+S 保存灯光配置
         if(keyboard.KeyPressed(HWKeyboard::S))
         {
             configChanged = true;
             keyboard.Release(HWKeyboard::S);
+        }
+
+        /*----- 触摸条方案1 对比前后touchid，灵敏度太低-----*/
+        if(keyboard.GetTouchBarState() > 0)
+        {
+            uint8_t touchId = 0;
+            for(int i=1; i < 7; i++)
+            {
+                if(keyboard.GetTouchBarState((uint8_t) i) > 0)
+                {
+                    touchId = i;
+                }
+            }
+
+            //排除第一次按下和按住没动的场景
+            if(lastTouchId != 0)
+            {
+                if(touchId > lastTouchId)
+                {
+                    touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
+                }
+                else if(touchId < lastTouchId)
+                {
+                    touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
+                }
+                else
+                {
+                    touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
+                }
+            }
+            keyboard.SetRgbBufferByID(17 + touchId, HWKeyboard::Color_t{250, 0, 0});
+            lastTouchId = touchId;
+        }
+        else
+        {
+            lastTouchId = 0;
         }
     }
 
@@ -170,41 +207,7 @@ extern "C" void OnTimerCallback() // 1000Hz callback
 //
 //    }
 
-    /*----- 触摸条方案1 对比前后touchid，灵敏度太低-----*/
-    if(keyboard.GetTouchBarState() > 0)
-    {
-        uint8_t touchId = 0;
-        for(int i=1; i < 7; i++)
-        {
-            if(keyboard.GetTouchBarState((uint8_t) i) > 0)
-            {
-                touchId = i;
-            }
-        }
 
-        //排除第一次按下和按住没动的场景
-        if(lastTouchId != 0)
-        {
-            if(touchId > lastTouchId)
-            {
-                touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
-            }
-            else if(touchId < lastTouchId)
-            {
-                touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
-            }
-            else
-            {
-                touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
-            }
-        }
-        keyboard.SetRgbBufferByID(17 + touchId, HWKeyboard::Color_t{250, 0, 0});
-        lastTouchId = touchId;
-    }
-    else
-    {
-        lastTouchId = 0;
-    }
 
     /*----  ----*/
 

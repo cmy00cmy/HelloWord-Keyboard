@@ -66,12 +66,13 @@ void Main()
         // Send RGB buffers to LEDs
         keyboard.SyncLights();
 
+        //TODO:通过定时器更新
         if(configChanged)
         {
             config.mode = keyboard.mode;
             memcpy(config.color, keyboard.color, 3);
             eeprom.Push(0, config);
-
+            configChanged = false;
         }
     }
 
@@ -112,7 +113,6 @@ extern "C" void OnTimerCallback() // 1000Hz callback
 
             keyboard.Release(HWKeyboard::BACKSPACE);
             lastKeyCode = HWKeyboard::BACKSPACE;
-            configChanged  = true;
         }
 
         //mode-2 修改颜色
@@ -133,11 +133,17 @@ extern "C" void OnTimerCallback() // 1000Hz callback
             }
             keyboard.Release(HWKeyboard::UP_ARROW);
 
+        }
+
+        if(keyboard.KeyPressed(HWKeyboard::S))
+        {
             configChanged = true;
+            keyboard.Release(HWKeyboard::S);
         }
     }
 
-    /*----- 触摸条方案1 对比前后touchid，灵敏度太低-----*/
+
+    /*----- 触摸条方案2 自定义触发按键，根据1-3 LEFT 4-6 RIGHT------*/
 //    if(keyboard.GetTouchBarState() > 0)
 //    {
 //        uint8_t touchId = 0;
@@ -148,58 +154,60 @@ extern "C" void OnTimerCallback() // 1000Hz callback
 //                touchId = i;
 //            }
 //        }
-//        keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
 //
-//        //排除第一次按下和按住没动的场景
-//        if(lastTouchId != 0 && touchId != lastTouchId)
+//        if(touchId > 3)
 //        {
-//            if(touchId > lastTouchId)
-//            {
-//                keyboard.Press(HWKeyboard::RIGHT_ARROW);
-//            }
-//            else
-//            {
-//                keyboard.Press(HWKeyboard::LEFT_ARROW);
-//            }
+//            keyboard.Press(HWKeyboard::RIGHT_ARROW);
 //        }
+//        else if(touchId <= 3)
+//        {
+//            keyboard.Press(HWKeyboard::LEFT_ARROW);
+//        }
+//        else
+//        { }
 //
-//        lastTouchId = touchId;
+//        keyboard.SetRgbBufferByID(17 + touchId, HWKeyboard::Color_t{250, 0, 0});
+//
 //    }
-//    else
-//    {
-//        lastTouchId = 0;
-//    }
-//    keyboard.SetRgbBufferByID(lastTouchId, HWKeyboard::Color_t{250, 0, 0});
-    /*----  ----*/
 
-    /*----- 触摸条方案2 自定义触发按键，根据1-3 LEFT 4-6 RIGHT------*/
-    if(keyboard.KeyPressed(HWKeyboard::LEFT_CTRL))
+    /*----- 触摸条方案1 对比前后touchid，灵敏度太低-----*/
+    if(keyboard.GetTouchBarState() > 0)
     {
         uint8_t touchId = 0;
-        if(keyboard.GetTouchBarState() > 0)
+        for(int i=1; i < 7; i++)
         {
-            for(int i=1; i < 7; i++)
+            if(keyboard.GetTouchBarState((uint8_t) i) > 0)
             {
-                if(keyboard.GetTouchBarState((uint8_t) i) > 0)
-                {
-                    touchId = i;
-                }
+                touchId = i;
             }
-            touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
         }
-        keyboard.SetRgbBufferByID(touchId, HWKeyboard::Color_t{250, 0, 0});
+
+        //排除第一次按下和按住没动的场景
+        if(lastTouchId != 0)
+        {
+            if(touchId > lastTouchId)
+            {
+                touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
+            }
+            else if(touchId < lastTouchId)
+            {
+                touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
+            }
+            else
+            {
+                touchId > 3 ? keyboard.Press(HWKeyboard::RIGHT_ARROW) : keyboard.Press(HWKeyboard::LEFT_ARROW);
+            }
+        }
+        keyboard.SetRgbBufferByID(17 + touchId, HWKeyboard::Color_t{250, 0, 0});
+        lastTouchId = touchId;
+    }
+    else
+    {
+        lastTouchId = 0;
     }
 
-    /*if (keyboard.KeyPressed(HWKeyboard::LEFT_CTRL) &&
-        keyboard.KeyPressed(HWKeyboard::A))
-    {
-        // do something...
-
-        // or trigger some keys...
-        keyboard.Press(HWKeyboard::DELETE);
-    }*/
-
     /*----  ----*/
+
 
     // Report HID key states
     USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,
